@@ -11,7 +11,7 @@ app.use(express.urlencoded({extended:true}));
 
 app.use("/",inventoryRoute);
 
-mongoose.connect("mongodb://localhost:27017/inventory-management")
+mongoose.connect("mongodb+srv://aravindofficial382:admin123@cluster0.tdj1qo9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then(()=>{console.log("mongodb connected successfully")})
 .catch((e)=>{console.log(e)})
 

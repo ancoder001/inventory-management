@@ -19,7 +19,7 @@ const InventorySchema=new Schema(
         sellingprice:{
             type:Number
         },
-        tome:ISODate("")
+        
     },
     {timestamps:true}
 );
