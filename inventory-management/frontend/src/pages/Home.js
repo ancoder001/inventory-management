@@ -1,40 +1,46 @@
-import React from 'react'
-import "../index.css"
+import React, { useState } from 'react';
+import Header from '../components/Header';
 
 const Home = () => {
+  const [data, setData] = useState({
+    totalProducts: 100,
+    totalInvested: 50000,
+    totalEarnings: 75000,
+    totalProfit: 25000,
+    profitPercentage: 50,
+  });
+
   return (
-    <div className='flex w-screen'>
-        <div className='bg-blue-400 min-h-screen max-h-screen  w-[20%]'>
-            sidebar
+    <div className="p-6">
+      <Header title="Dashboard" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="bg-white p-4 shadow-md rounded-lg">
+          <h2 className="text-xl font-bold">Total Products</h2>
+          <p className="text-2xl">{data.totalProducts}</p>
         </div>
-        <div className='bg-gray-100 max-h-screen min-h-screen w-[80%]'>
-            <div className='flex gap-4 justify-center mt-5'>
-                <div className='h-20 w-44 rounded-xl text-lg flex flex-col items-center justify-center shadow'>
-                 <p>Total No. of Stocks</p>
-                 <p>{"3000"}</p>
-                </div>
-
-                <div className='h-20 w-44 rounded-xl text-lg flex flex-col items-center justify-center shadow'>
-                 <p>Total Investment</p>
-                 <p>&#8377;{"3000"}</p>
-                </div>
-
-                <div className='h-20 w-44 rounded-xl text-lg flex flex-col items-center justify-center shadow'>
-                 <p>Total Earnings</p>
-                 <p>&#8377;{"3000"}</p>
-                </div>
-
-                <div className='h-20 w-44 rounded-xl text-lg flex flex-col items-center justify-center shadow'>
-                 <p>Total Profit</p>
-                 <p>&#8377;{"3000"}</p>
-                </div>
-            </div>
-            <div className='bg-yellow-200 w-full h-4/6 mt-7'>
-                 chart
-            </div>
+        <div className="bg-white p-4 shadow-md rounded-lg">
+          <h2 className="text-xl font-bold">Total Invested</h2>
+          <p className="text-2xl">₹{data.totalInvested}</p>
         </div>
+        <div className="bg-white p-4 shadow-md rounded-lg">
+          <h2 className="text-xl font-bold">Total Earnings</h2>
+          <p className="text-2xl">₹{data.totalEarnings}</p>
+        </div>
+        <div className="bg-white p-4 shadow-md rounded-lg">
+          <h2 className="text-xl font-bold">Total Profit</h2>
+          <p className="text-2xl">₹{data.totalProfit}</p>
+        </div>
+        <div className="bg-white p-4 shadow-md rounded-lg">
+          <h2 className="text-xl font-bold">Profit Percentage</h2>
+          <p className="text-2xl">{data.profitPercentage}%</p>
+        </div>
+      </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-4">Analysis Charts</h2>
+        {/* Add your charts here */}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

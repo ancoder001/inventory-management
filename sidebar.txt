@@ -1,0 +1,34 @@
+import React from 'react'
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
+
+const SideMenu = () => {
+  return (
+    <div>
+    <Sidebar>
+  <Menu
+    menuItemStyles={{
+      button: {
+        // the active class will be added automatically by react router
+        // so we can use it to style the active menu item
+        [`&.active`]: {
+          backgroundColor: '#13395e',
+          color: '#b6c8d9',
+        },
+      },
+    }}
+  >
+  <SubMenu label="charts">
+    <MenuItem>Pie Chart</MenuItem>
+  </SubMenu>
+    <MenuItem component={<Link to="/" />}> Dashboard</MenuItem>
+    <MenuItem component={<Link to="/inventory" />}> Inventory</MenuItem>
+    <MenuItem component={<Link to="/bill" />}> Bill</MenuItem>
+  </Menu>
+</Sidebar>
+</div>
+  )
+}
+
+export default SideMenu
