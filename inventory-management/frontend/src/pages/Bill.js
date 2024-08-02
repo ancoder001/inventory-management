@@ -2,88 +2,101 @@ import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Autocomplete } from '@mui/material';
+
+import axios from 'axios';
 
 const Bill = () => {
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState([]);
   const [customer, setCustomer] = useState({ name: '', mobile: '' });
   const [billItems, setBillItems] = useState([]);
   const [billNo] = useState(Math.floor(Math.random() * 100000));
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [checkedItems, setCheckedItems] = useState({});
+  const [itemname,setItemname]=useState("");
+  // const [quantity,setQuantity]=useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
 
-  const billRef = useRef(null); // Reference to the bill section for PDF generation
+  // Reference to the bill section for PDF generation
 
-  useEffect(() => {
+  const getdata=()=>{
+    axios.get("http://localhost:5600/inventory/data")
+    .then((res)=>{
+      setData(res.data)
+    })
+  }
+  
+  useEffect(()=>{
+    getdata();
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
-
+    }, 1000); // Update every minute
     return () => clearInterval(timer); // Cleanup interval on component unmount
-  }, []);
+    
+  },[])
 
   const addBillItem = () => {
-    setBillItems([...billItems, { productName: 'Sample Product', quantity: 1, price: 50 }]);
+    setOpen(!open);
+    setBillItems([...billItems, { name: itemname, quantity: quantity, price: price }]);
   };
 
   const totalAmount = billItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-  const printBill = () => {
-    const printWindow = window.open('', '', 'height=600,width=800');
-    printWindow.document.write('<html><head><title>Print Bill</title>');
-    printWindow.document.write('<style>body { font-family: Arial, sans-serif; margin: 20px; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th { background-color: #f4f4f4; } .footer { text-align: right; margin-top: 20px; }</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write('<h2>Billing</h2>');
-    printWindow.document.write('<div><strong>Customer Name:</strong> ' + customer.name + '</div>');
-    printWindow.document.write('<div><strong>Mobile Number:</strong> ' + customer.mobile + '</div>');
-    printWindow.document.write('<div><strong>Bill No:</strong> ' + billNo + '</div>');
-    printWindow.document.write('<div><strong>Date & Time:</strong> ' + `${currentTime.toLocaleDateString()} ${currentTime.getHours()}:${currentTime.getMinutes().toString().padStart(2, '0')}` + '</div>');
-    printWindow.document.write('<table><thead><tr><th>Serial No</th><th>Product Name</th><th>Quantity</th><th>Price per Item</th><th>Total Price</th></tr></thead><tbody>');
-    billItems.forEach((item, index) => {
-      printWindow.document.write(`<tr>
-        <td>${index + 1}</td>
-        <td>${item.productName}</td>
-        <td>${item.quantity}</td>
-        <td>${item.price}</td>
-        <td>${item.price * item.quantity}</td>
-      </tr>`);
-    });
-    printWindow.document.write('</tbody></table>');
-    printWindow.document.write('<div class="footer"><strong>Total Amount:</strong> $' + totalAmount + '</div>');
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+  
+
+  const Proceed=()=>{
+    console.log(billItems)
+    const newdata={customername:customer.name,mobile:customer.mobile,billno:billNo,particulars:billItems,total:totalAmount};
+    console.log(newdata)
+    axios.post("http://localhost:5600/bill/create",newdata)
+    .then((res)=>{
+      if(res.status === 201){
+        alert("Bill created successfully");
+      }
+    })
+  }
+
+  const handleOpen=()=>{
+    setOpen(!open);
+    setSelectedItem("");
+    setQuantity(0)
+    setPrice(0)
+  }
+
+  const handleQuantityChange = (event) => {
+    setQuantity(event.target.value);
   };
 
-  const downloadPDF = () => {
-    if (billRef.current) {
-      html2canvas(billRef.current, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210; // A4 size width in mm
-        const pageHeight = 295; // A4 size height in mm
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        
-        let position = 0;
-        
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        
-        while (heightLeft >= 0) {
-          position -= pageHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-        
-        pdf.save('bill.pdf');
-      });
+  const handleCheckboxChange = (index) => {
+    setCheckedItems({ ...checkedItems, [index]: !checkedItems[index] });
+  };
+
+  const deleteCheckedItems = () => {
+    setBillItems(billItems.filter((_, index) => !checkedItems[index]));
+    setCheckedItems({});
+  };
+
+  const handleItemChange = (event, value) => {
+    setSelectedItem(value);
+    if (value) {
+      setItemname(value.name)
+      setPrice(value.sellingprice);
+    } else {
+      setPrice('');
     }
   };
+  const filterOptions = (options, state) => {
+    return options.slice(0, 3);
+  };
+  const isDeleteButtonDisabled = !Object.values(checkedItems).some((isChecked) => isChecked);
 
   return (
     <div className="p-6">
       <Header title="Billing" />
-      <div id="bill-content" className="bg-white shadow-md rounded-lg p-4 mb-6" ref={billRef}>
+      <div id="bill-content" className="bg-white shadow-md rounded-lg p-4 mb-6">
         <h2 className="text-xl font-bold mb-4">Billing</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -130,12 +143,18 @@ const Bill = () => {
       </div>
       <div className="bg-white shadow-md rounded-lg p-4">
         <h2 className="text-xl font-bold mb-4">Billing Items</h2>
-        <button onClick={addBillItem} className="bg-blue-500 text-white p-2 rounded mb-4">
-          Add Item
-        </button>
+        <div className="flex space-x-4 mb-4">
+          <button onClick={handleOpen} className="bg-blue-500 text-white p-2 rounded">
+            Add Item
+          </button>
+          <button onClick={deleteCheckedItems} className={`bg-red-500 text-white p-2 rounded ${isDeleteButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isDeleteButtonDisabled}>
+            Delete Item
+          </button>
+        </div>
         <table className="min-w-full">
           <thead>
             <tr>
+              <th className="py-2"></th>
               <th className="py-2">Serial No</th>
               <th className="py-2">Product Name</th>
               <th className="py-2">Quantity</th>
@@ -146,27 +165,70 @@ const Bill = () => {
           <tbody>
             {billItems.map((item, index) => (
               <tr key={index}>
-                <td className="py-2">{index + 1}</td>
-                <td className="py-2">{item.productName}</td>
-                <td className="py-2">{item.quantity}</td>
-                <td className="py-2">${item.price}</td>
-                <td className="py-2">${item.price * item.quantity}</td>
+                <td className="py-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={checkedItems[index] || false}
+                    onChange={() => handleCheckboxChange(index)}
+                  />
+                </td>
+                <td className="py-2 text-center">{index + 1}</td>
+                <td className="py-2 text-center">{item.name}</td>
+                <td className="py-2 text-center">{item.quantity}</td>
+                <td className="py-2 text-center">₹{item.price}</td>
+                <td className="py-2 text-center">₹{item.price * item.quantity}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className="mt-4 text-right">
-          <strong>Total Amount: ${totalAmount}</strong>
+          <strong>Total Amount: ₹{totalAmount}</strong>
         </div>
         <div className="flex justify-end mt-4">
-          <button onClick={printBill} className="bg-green-500 text-white p-2 rounded mr-4">
-            Print Bill
+          <button onClick={Proceed} className="bg-green-500 text-white p-2 rounded mr-4">
+            Proceed
           </button>
-          <button onClick={downloadPDF} className="bg-blue-500 text-white p-2 rounded">
-            Download PDF
-          </button>
+          
         </div>
       </div>
+
+      <Dialog open={open} onClose={handleOpen}>
+      <div className='flex'>
+        <DialogTitle>Add Item</DialogTitle>
+        </div>
+        <DialogContent>
+        <Autocomplete
+          options={data}
+          getOptionLabel={(option) => option.name}
+          filterOptions={filterOptions}
+          onChange={handleItemChange}
+          renderInput={(params) => <TextField {...params} label="Item Name" variant="outlined" />}
+        />
+        <TextField
+          label="Quantity"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={quantity}
+          onChange={handleQuantityChange}
+        />
+        <TextField
+          label="Price"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={price}
+        />
+      </DialogContent>
+      <DialogActions>
+      <Button onClick={handleOpen} color="primary">
+        Cancel
+      </Button>
+      <Button onClick={addBillItem} color="primary">
+        Submit
+      </Button>
+    </DialogActions>
+      </Dialog>
     </div>
   );
 };

@@ -1,10 +1,11 @@
 const express=require("express");
-const {newBill}=require("../controllers/BillingController")
+const {newBill,getBills}=require("../controllers/BillingController")
 
 
 const router=express.Router();
 
 router.post("/create",newBill)
+router.get("/get",getBills);
 
 
 

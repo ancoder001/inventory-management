@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Inventory from './pages/Inventory';
 import Bill from './pages/Bill';
 import SideMenu from './components/SideMenu';
+import BillView from './pages/BillView';
 
 function App() {
   return (
@@ -12,11 +13,12 @@ function App() {
     <BrowserRouter>
     <div className="flex">
       <SideMenu />
-      <div className="flex-grow ml-64">
+      <div className="flex-grow">
         <Routes>
           <Route path="/dashboard" element={<Home/>} />
           <Route path="/inventory" element={<Inventory/>} />
           <Route path="/bill" element={<Bill/>} />
+          <Route path="/bills" element={<BillView />} />
           <Route path="/" exact element={<Home/>} />
         </Routes>
       </div>

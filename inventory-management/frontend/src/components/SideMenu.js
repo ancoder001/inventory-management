@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+ // Import the CSS
+import { Home as HomeIcon, Inventory as InventoryIcon, Receipt as ReceiptIcon, ListAlt as ListAltIcon } from '@mui/icons-material';
 
-const SideMenu = () => (
-  <div className="fixed w-64 h-full bg-gray-800 text-white">
-    <div className="p-4 font-bold text-2xl">AN Solutions</div>
-    <nav className="mt-10">
-      <Link to="/dashboard" className="block py-2.5 px-4 hover:bg-gray-700">Dashboard</Link>
-      <Link to="/inventory" className="block py-2.5 px-4 hover:bg-gray-700">Inventory</Link>
-      <Link to="/bill" className="block py-2.5 px-4 hover:bg-gray-700">Billing</Link>
-    </nav>
-  </div>
-);
+const SideMenu = () => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <Sidebar collapsed={collapsed}>
+    <div className='w-full text-center text-2xl bg-gray-600 py-2 text-white'>AN Solutions</div>
+      <Menu iconShape="circle">
+      <Link to="/dashboard">
+        <MenuItem icon={<HomeIcon />}>
+          Dashboard
+        </MenuItem>
+        </Link>
+        <Link to="/inventory">
+        <MenuItem icon={<InventoryIcon />}>
+          Inventory
+        </MenuItem>
+        </Link>
+        <SubMenu label="Billing" icon={<ReceiptIcon />}>
+        <Link to="/bill">
+        <MenuItem icon={<ListAltIcon />}>
+            New Bill
+          </MenuItem>
+          </Link>
+          <Link to="/bills">
+          <MenuItem icon={<ListAltIcon />}>
+            View Bills
+          </MenuItem>
+          </Link>
+        </SubMenu>
+      </Menu>
+    </Sidebar>
+  );
+};
 
 export default SideMenu;
