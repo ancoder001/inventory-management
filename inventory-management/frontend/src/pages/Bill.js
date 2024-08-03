@@ -18,6 +18,7 @@ const Bill = () => {
   // const [quantity,setQuantity]=useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
+  const [cp,setCp]=useState(0);
   const [price, setPrice] = useState('');
 
   // Reference to the bill section for PDF generation
@@ -40,7 +41,7 @@ const Bill = () => {
 
   const addBillItem = () => {
     setOpen(!open);
-    setBillItems([...billItems, { name: itemname, quantity: quantity, price: price }]);
+    setBillItems([...billItems, { name: itemname, quantity: quantity,cp:cp, price: price }]);
   };
 
   const totalAmount = billItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -84,8 +85,10 @@ const Bill = () => {
     if (value) {
       setItemname(value.name)
       setPrice(value.sellingprice);
+      setCp(value.costprice)
     } else {
       setPrice('');
+      setCp(0)
     }
   };
   const filterOptions = (options, state) => {

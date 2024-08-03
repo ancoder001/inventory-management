@@ -3,19 +3,24 @@ const Inventory=require("../models/Inventorymodel");
 
 
 const calculateProfit = async (bills) => {
-    let totalProfit = 0;
+    var totalProfit = 0;
   
-    for (const bill of bills) {
-      for (const item of bill.particulars) {
-        const inventoryItem = await Inventory.findOne({ name: item.name });
-        if (inventoryItem) {
-          const costPrice = inventoryItem.costprice;
-          const profit = (item.price - costPrice) * item.quantity;
-          totalProfit += profit;
-        }
-      }
-    }
-  
+    // for (const bill of bills) {
+    //   for (const item of bill.particulars) {
+    //     const inventoryItem = await Inventory.findOne({ name: item.name });
+    //     if (inventoryItem) {
+    //       const costPrice = inventoryItem.costprice;
+    //       const profit = (item.price - costPrice) * item.quantity;
+    //       totalProfit += profit;
+    //     }
+    //   }
+    // }
+    bills.forEach(element => {
+      element.particulars.forEach(ele=>{
+        console.log(ele)
+        totalProfit+=((ele.price-ele.cp)*ele.quantity)
+      })
+    });
     return totalProfit;
   };
   
@@ -29,7 +34,7 @@ const calculateProfit = async (bills) => {
         if (inventoryItem) {
           const category = inventoryItem.category;
           const costPrice = inventoryItem.costprice;
-          const profit = (item.price - costPrice) * item.quantity;
+          const profit = (item.price - item.cp) * item.quantity;
           if (!categoryProfits[category]) {
             categoryProfits[category] = 0;
           }
@@ -45,9 +50,14 @@ const calculateProfit = async (bills) => {
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const bills = await Bill.find({ createdAt: { $gte: today } });
-      const profit = calculateProfit(bills);
-      res.json({ profit });
+      const bills = await Bill.find({createdAt : {$gte:today}});
+      let profit = 0;
+      bills.forEach(element => {
+        element.particulars.forEach(ele=>{
+          profit+=((ele.price-ele.cp)*ele.quantity)
+        })
+      });
+      res.status(200).json( {profit} );
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -59,7 +69,12 @@ const calculateProfit = async (bills) => {
       const lastWeek = new Date(today);
       lastWeek.setDate(today.getDate() - 7);
       const bills = await Bill.find({ createdAt: { $gte: lastWeek } });
-      const profit = calculateProfit(bills);
+      let profit = 0;
+      bills.forEach(element => {
+        element.particulars.forEach(ele=>{
+          profit+=((ele.price-ele.cp)*ele.quantity)
+        })
+      });
       res.json({ profit });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -72,7 +87,12 @@ const calculateProfit = async (bills) => {
       const lastMonth = new Date(today);
       lastMonth.setMonth(today.getMonth() - 1);
       const bills = await Bill.find({ createdAt: { $gte: lastMonth } });
-      const profit = calculateProfit(bills);
+      let profit = 0;
+      bills.forEach(element => {
+        element.particulars.forEach(ele=>{
+          profit+=((ele.price-ele.cp)*ele.quantity)
+        })
+      });
       res.json({ profit });
     } catch (error) {
       res.status(500).json({ error: error.message });

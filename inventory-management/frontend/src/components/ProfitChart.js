@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 
 const ProfitChart = () => {
@@ -31,16 +31,19 @@ const ProfitChart = () => {
     fetchData();
   }, []);
 
+
   const categoryLabels = Object.keys(categoryProfits);
   const categoryData = Object.values(categoryProfits);
+  console.log(dailyProfit)
 
   return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6">Profit Charts</h2>
+    <div className="p-6 flex flex-wrap">
+      
 
-      <div className="mb-6 w-3/6 h-[10%]">
+      <div className="mb-6 w-2/6 h-[10%]">
         <h3 className="text-xl font-bold mb-4">Daily Profit</h3>
-        <Line
+        <div className='h-40'>
+        <Pie
           data={{
             labels: ['Today'],
             datasets: [
@@ -49,23 +52,16 @@ const ProfitChart = () => {
                 data: [dailyProfit],
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
               },
             ],
           }}
-          options={{
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          }}
         />
+        </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 w-2/6 h-[10%]">
         <h3 className="text-xl font-bold mb-4">Weekly Profit</h3>
-        <Line
+        <Bar
           data={{
             labels: ['Last 7 Days'],
             datasets: [
@@ -88,9 +84,9 @@ const ProfitChart = () => {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 w-2/6 h-[10%]">
         <h3 className="text-xl font-bold mb-4">Monthly Profit</h3>
-        <Line
+        <Bar
           data={{
             labels: ['Last 30 Days'],
             datasets: [

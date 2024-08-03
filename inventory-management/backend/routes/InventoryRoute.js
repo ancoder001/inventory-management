@@ -11,4 +11,5 @@ router.get("/find/:id",getDataById);
 router.put("/update/:id",updateData);
 router.delete("/delete/:id",deleteData);
 
+
 module.exports=router;

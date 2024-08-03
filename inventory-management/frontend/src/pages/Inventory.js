@@ -17,6 +17,7 @@ const Inventory = () => {
   const [search, setSearch] = useState('');
   const [updatedata, setUpdatedata] = useState();
   const [up, setUp] = useState(false);
+  const [lastupdate, setLastupdate] = useState('');
   
 
   // Adding useState hooks for form fields
@@ -41,6 +42,12 @@ const Inventory = () => {
     axios.get('http://localhost:5600/inventory/category')
       .then(response => {
         setCategories(response.data);
+      })
+      .catch((e) => { console.log(e) })
+      axios.get("http://localhost:5600/api/last-updated")
+      .then((res)=>{
+        const updates=convertGMTtoIST(res.data.lastUpdated);
+        setLastupdate(updates)
       })
       .catch((e) => { console.log(e) })
   }
@@ -87,17 +94,21 @@ const Inventory = () => {
       })
   }
 
-  const handleUpdate = (id) => {
+  const getupdatedata=(id)=>{
     axios.get(`http://localhost:5600/inventory/find/${id}`)
-      .then(
-        (res) => { setUpdatedata(res.data) }
-      )
+    .then((res)=>{
+      setUpdatedata(res.data)
+    })
+  }
+
+  const handleUpdate = (id) => {
+    getupdatedata(id);
     setUp(true);
-    setItemname(updatedata.name);
-    setCategory(updatedata.category);
-    setQuantity(updatedata.quantity);
-    setCp(updatedata.costprice);
-    setSp(updatedata.sellingprice);
+    setItemname(updatedata?.name);
+    setCategory(updatedata?.category);
+    setQuantity(updatedata?.quantity);
+    setCp(updatedata?.costprice);
+    setSp(updatedata?.sellingprice);
     setId(id);
     setOpen(!open);
   }
@@ -138,7 +149,11 @@ const Inventory = () => {
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
-
+  const convertGMTtoIST=(gmtDate)=> {
+    const date = new Date(gmtDate);
+    const options = { timeZone: "Asia/Kolkata", year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return date.toLocaleString('en-IN', options);
+}
   useEffect(() => {
     getdata();
   }, [])
@@ -148,7 +163,7 @@ const Inventory = () => {
       <Header title="Inventory" />
       <div className="flex justify-between items-center mb-6">
         <div className="text-xl font-bold">Inventory</div>
-        <div>Last updated: {new Date().toLocaleString()}</div>
+        <div>Last updated: {lastupdate}</div>
       </div>
       <div className="flex mb-4">
         <input

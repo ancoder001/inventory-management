@@ -22,6 +22,9 @@ const billingSchema=new Schema({
             },
             price:{
                 type:Number
+            },
+            cp:{
+                type:Number
             }
         }
     ],

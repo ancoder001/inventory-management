@@ -4,6 +4,7 @@ const cors=require("cors");
 const inventoryRoute=require("./routes/InventoryRoute")
 const billRoute=require("./routes/BillingRoute");
 const calcroute=require("./routes/CalcRoute");
+const inventory=require("./models/Inventorymodel");
 
 const app=express();
 
@@ -14,6 +15,14 @@ app.use(express.urlencoded({extended:true}));
 app.use("/inventory",inventoryRoute);
 app.use("/bill",billRoute);
 app.use("/profit",calcroute);
+app.get('/api/last-updated', async (req, res) => {
+    try {
+      const lastUpdated = await inventory.findOne().sort({ updatedAt: -1 }).select('updatedAt');
+      res.json({ lastUpdated: lastUpdated.updatedAt });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
 // mongoose.connect("mongodb+srv://aravindofficial382:admin123@cluster0.tdj1qo9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 // .then(()=>{console.log("mongodb connected successfully")})
