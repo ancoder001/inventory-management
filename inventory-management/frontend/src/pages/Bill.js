@@ -1,71 +1,87 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Autocomplete } from '@mui/material';
-
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Bill = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [customer, setCustomer] = useState({ name: '', mobile: '' });
   const [billItems, setBillItems] = useState([]);
-  const [billNo] = useState(Math.floor(Math.random() * 100000));
+  const [billNo,setBillNo] = useState(Math.floor(Math.random() * 100000));
   const [currentTime, setCurrentTime] = useState(new Date());
   const [checkedItems, setCheckedItems] = useState({});
-  const [itemname,setItemname]=useState("");
-  // const [quantity,setQuantity]=useState(0);
+  const [itemname, setItemname] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState('');
-  const [cp,setCp]=useState(0);
+  const [cp, setCp] = useState(0);
   const [price, setPrice] = useState('');
 
-  // Reference to the bill section for PDF generation
-
-  const getdata=()=>{
+  const getdata = () => {
     axios.get("http://localhost:5600/inventory/data")
-    .then((res)=>{
-      setData(res.data)
-    })
-  }
-  
-  useEffect(()=>{
+      .then((res) => {
+        setData(res.data);
+      });
+  };
+
+  useEffect(() => {
     getdata();
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000); // Update every minute
     return () => clearInterval(timer); // Cleanup interval on component unmount
-    
-  },[])
+  }, []);
 
   const addBillItem = () => {
+    if (selectedItem && quantity > selectedItem.quantity) {
+      toast.error(`Available quantity for ${selectedItem.name} is only ${selectedItem.quantity}`);
+      return;
+    }
     setOpen(!open);
-    setBillItems([...billItems, { name: itemname, quantity: quantity,cp:cp, price: price }]);
+    setBillItems([...billItems, { name: itemname, quantity: quantity, cp: cp, price: price }]);
   };
 
   const totalAmount = billItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const resetForm = () => {
+    setCustomer({ name: '', mobile: '' });
+    setBillItems([]);
+    setBillNo(Math.floor(Math.random() * 100000));
+    setCheckedItems({});
+    setItemname("");
+    setSelectedItem(null);
+    setQuantity('');
+    setCp(0);
+    setPrice('');
+    setBillItems([]);
+  };
 
-  
+  const Proceed = () => {
+    const newdata = {
+      customername: customer.name,
+      mobile: customer.mobile,
+      billno: billNo,
+      particulars: billItems,
+      total: totalAmount
+    };
+    axios.post("http://localhost:5600/bill/create", newdata)
+      .then((res) => {
+        if (res.status === 201) {
+          toast.success("Bill created successfully");
+          resetForm();
+        }
+      });
+  };
 
-  const Proceed=()=>{
-    console.log(billItems)
-    const newdata={customername:customer.name,mobile:customer.mobile,billno:billNo,particulars:billItems,total:totalAmount};
-    console.log(newdata)
-    axios.post("http://localhost:5600/bill/create",newdata)
-    .then((res)=>{
-      if(res.status === 201){
-        alert("Bill created successfully");
-      }
-    })
-  }
-
-  const handleOpen=()=>{
+  const handleOpen = () => {
     setOpen(!open);
-    setSelectedItem("");
-    setQuantity(0)
-    setPrice(0)
-  }
+    setSelectedItem(null);
+    setQuantity('');
+    setPrice('');
+  };
 
   const handleQuantityChange = (event) => {
     setQuantity(event.target.value);
@@ -83,21 +99,24 @@ const Bill = () => {
   const handleItemChange = (event, value) => {
     setSelectedItem(value);
     if (value) {
-      setItemname(value.name)
+      setItemname(value.name);
       setPrice(value.sellingprice);
-      setCp(value.costprice)
+      setCp(value.costprice);
     } else {
       setPrice('');
-      setCp(0)
+      setCp(0);
     }
   };
+
   const filterOptions = (options, state) => {
     return options.slice(0, 3);
   };
+
   const isDeleteButtonDisabled = !Object.values(checkedItems).some((isChecked) => isChecked);
 
   return (
     <div className="p-6">
+      <ToastContainer />
       <Header title="Billing" />
       <div id="bill-content" className="bg-white shadow-md rounded-lg p-4 mb-6">
         <h2 className="text-xl font-bold mb-4">Billing</h2>
@@ -191,46 +210,43 @@ const Bill = () => {
           <button onClick={Proceed} className="bg-green-500 text-white p-2 rounded mr-4">
             Proceed
           </button>
-          
         </div>
       </div>
 
       <Dialog open={open} onClose={handleOpen}>
-      <div className='flex'>
         <DialogTitle>Add Item</DialogTitle>
-        </div>
         <DialogContent>
-        <Autocomplete
-          options={data}
-          getOptionLabel={(option) => option.name}
-          filterOptions={filterOptions}
-          onChange={handleItemChange}
-          renderInput={(params) => <TextField {...params} label="Item Name" variant="outlined" />}
-        />
-        <TextField
-          label="Quantity"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={quantity}
-          onChange={handleQuantityChange}
-        />
-        <TextField
-          label="Price"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={price}
-        />
-      </DialogContent>
-      <DialogActions>
-      <Button onClick={handleOpen} color="primary">
-        Cancel
-      </Button>
-      <Button onClick={addBillItem} color="primary">
-        Submit
-      </Button>
-    </DialogActions>
+          <Autocomplete
+            options={data}
+            getOptionLabel={(option) => option.name}
+            filterOptions={filterOptions}
+            onChange={handleItemChange}
+            renderInput={(params) => <TextField {...params} label="Item Name" variant="outlined" />}
+          />
+          <TextField
+            label="Quantity"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={quantity}
+            onChange={handleQuantityChange}
+          />
+          <TextField
+            label="Price"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={price}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleOpen} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={addBillItem} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

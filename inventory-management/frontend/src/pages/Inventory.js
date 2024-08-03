@@ -8,6 +8,8 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Inventory = () => {
   const [open, setOpen] = useState(false);
@@ -18,7 +20,6 @@ const Inventory = () => {
   const [updatedata, setUpdatedata] = useState();
   const [up, setUp] = useState(false);
   const [lastupdate, setLastupdate] = useState('');
-  
 
   // Adding useState hooks for form fields
   const [itemname, setItemname] = useState("");
@@ -36,25 +37,25 @@ const Inventory = () => {
     axios.get('http://localhost:5600/inventory/data')
       .then(response => {
         setInventory(response.data);
-        
       })
-      .catch((e) => { console.log(e) })
+      .catch((e) => { console.log(e) });
     axios.get('http://localhost:5600/inventory/category')
       .then(response => {
         setCategories(response.data);
       })
-      .catch((e) => { console.log(e) })
-      axios.get("http://localhost:5600/api/last-updated")
-      .then((res)=>{
-        const updates=convertGMTtoIST(res.data.lastUpdated);
-        setLastupdate(updates)
+      .catch((e) => { console.log(e) });
+    axios.get("http://localhost:5600/api/last-updated")
+      .then((res) => {
+        const updates = convertGMTtoIST(res.data.lastUpdated);
+        setLastupdate(updates);
       })
-      .catch((e) => { console.log(e) })
-  }
+      .catch((e) => { console.log(e) });
+  };
 
   const handleSearch = (event) => {
     setSearch(event.target.value);
   };
+
   const handleOpen = (e) => {
     setOpen(!open);
     setUp(false);
@@ -63,43 +64,43 @@ const Inventory = () => {
     setQuantity(0);
     setCp(0);
     setSp(0);
-  }
+  };
 
   const handleAdd = (e) => {
     e.preventDefault();
     setUp(false);
     setOpen(!open);
-    const prevdata = inventory.filter((it) => (it.name === itemname))
+    const prevdata = inventory.filter((it) => (it.name === itemname));
     if (prevdata.length > 0) {
-      alert("Item already exists");
+      toast.error("Item already exists");
       return;
     }
-    const data = { name: itemname, category: category, quantity: quantity, costprice: cp, sellingprice: sp }
+    const data = { name: itemname, category: category, quantity: quantity, costprice: cp, sellingprice: sp };
     axios.post('http://localhost:5600/inventory/add', data)
       .then((res) => {
         if (res.status === 201) {
           getdata();
-          alert("Item added successfully")
+          toast.success("Item added successfully");
         }
-      })
-  }
+      });
+  };
 
   const handleDelete = (id) => {
     axios.delete(`http://localhost:5600/inventory/delete/${id}`)
       .then((res) => {
         if (res.status === 200) {
           getdata();
-          alert("Item deleted successfully");
+          toast.success("Item deleted successfully");
         }
-      })
-  }
+      });
+  };
 
-  const getupdatedata=(id)=>{
+  const getupdatedata = (id) => {
     axios.get(`http://localhost:5600/inventory/find/${id}`)
-    .then((res)=>{
-      setUpdatedata(res.data)
-    })
-  }
+      .then((res) => {
+        setUpdatedata(res.data);
+      });
+  };
 
   const handleUpdate = (id) => {
     getupdatedata(id);
@@ -111,18 +112,17 @@ const Inventory = () => {
     setSp(updatedata?.sellingprice);
     setId(id);
     setOpen(!open);
-  }
+  };
 
   const handleUp = (e) => {
     e.preventDefault();
-    const data = { name: itemname, category: category, quantity: quantity, costprice: cp,sellingprice:sp }
+    const data = { name: itemname, category: category, quantity: quantity, costprice: cp, sellingprice: sp };
     axios.put(`http://localhost:5600/inventory/update/${id}`, data)
       .then((res) => {
         if (res.status === 200) {
           getdata();
-          alert("Updated successfully");
-          setOpen(!open)
-
+          toast.success("Updated successfully");
+          setOpen(!open);
           setItemname("");
           setCategory("");
           setQuantity(0);
@@ -130,8 +130,8 @@ const Inventory = () => {
           setSp(0);
           setUp(false);
         }
-      })
-  }
+      });
+  };
 
   const handleAddCategory = (e) => {
     e.preventDefault();
@@ -139,28 +139,31 @@ const Inventory = () => {
       .then((res) => {
         if (res.status === 201) {
           getdata();
-          alert("Category added successfully");
+          toast.success("Category added successfully");
           setOpenCategoryDialog(false);
           setNewCategory('');
         }
-      })
-  }
+      });
+  };
 
   const filteredInventory = inventory.filter(item =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
-  const convertGMTtoIST=(gmtDate)=> {
+
+  const convertGMTtoIST = (gmtDate) => {
     const date = new Date(gmtDate);
     const options = { timeZone: "Asia/Kolkata", year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
     return date.toLocaleString('en-IN', options);
-}
+  };
+
   useEffect(() => {
     getdata();
-  }, [])
+  }, []);
 
   return (
     <div className="p-6">
       <Header title="Inventory" />
+      <ToastContainer />
       <div className="flex justify-between items-center mb-6">
         <div className="text-xl font-bold">Inventory</div>
         <div>Last updated: {lastupdate}</div>
@@ -217,67 +220,67 @@ const Inventory = () => {
           <Button onClick={handleOpen}>Close</Button>
         </div>
         <DialogContent>
-          <form className='flex flex-col gap-3'>
-            <Autocomplete
-              freeSolo
-              options={inventory.map(item => item.name)} // Provide options from the inventory
-              value={itemname} // Set the current value
-              onChange={(event, value) => {
-                setItemname(value || ''); // Set the itemname to the selected value or an empty string
-                const selectedItem = inventory.find(item => item.name === value);
-                if (selectedItem) {
-                  setCp(selectedItem.costprice);
-                  setSp(selectedItem.sellingprice);
-                } else {
-                  setCp(0); // Reset price fields if no item is selected
-                  setSp(0);
-                }
-              }}
-              onInputChange={(event, value) => {
-                setItemname(value); // Update the itemname state based on user input
-                if (!inventory.some(item => item.name === value)) {
-                  setCp(0); // Reset price fields for new item
-                  setSp(0);
-                }
-              }}
-              renderInput={(params) => (
-                <TextField {...params} label="Item Name" variant="outlined" />
-              )}
-            />
-            <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 border-gray-300 rounded-sm'>
-              <option value="">Select Category</option>
-              {categories.map((item, index) => (
-                <option value={item.category} key={index}>{item.category}</option>
-              ))}
-            </select>
-            <TextField type='number' label="Quantity" variant="outlined" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
-            <TextField type='number' label="Cost Price" variant="outlined" value={cp} onChange={(e) => { setCp(e.target.value) }} />
-            <TextField type='number' label="Selling Price" variant="outlined" value={sp} onChange={(e) => { setSp(e.target.value) }} />
-            {!up ? <Button variant="contained" color="primary" onClick={(e) => { handleAdd(e) }}>Add</Button> :
-              <Button variant="contained" color="primary" onClick={(e) => { handleUp(e) }}>Update</Button>}
-          </form>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={openCategoryDialog} onClose={() => setOpenCategoryDialog(false)}>
-        <DialogTitle>Add Category</DialogTitle>
-        <DialogContent>
-          <form className='flex flex-col gap-3'>
-            <TextField
-              type="text"
-              label="Category Name"
-              variant="outlined"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-            />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={(e) => handleAddCategory(e)}>Add</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+        <form className='flex flex-col gap-3'>
+        <Autocomplete
+          freeSolo
+          options={inventory.map(item => item.name)} // Provide options from the inventory
+          value={itemname} // Set the current value
+          onChange={(event, value) => {
+            setItemname(value || ''); // Set the itemname to the selected value or an empty string
+            const selectedItem = inventory.find(item => item.name === value);
+            if (selectedItem) {
+              setCp(selectedItem.costprice);
+              setSp(selectedItem.sellingprice);
+            } else {
+              setCp(0); // Reset price fields if no item is selected
+              setSp(0);
+            }
+          }}
+          onInputChange={(event, value) => {
+            setItemname(value); // Update the itemname state based on user input
+            if (!inventory.some(item => item.name === value)) {
+              setCp(0); // Reset price fields for new item
+              setSp(0);
+            }
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Item Name" variant="outlined" />
+          )}
+        />
+        <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 border-gray-300 rounded-sm'>
+          <option value="">Select Category</option>
+          {categories.map((item, index) => (
+            <option value={item.category} key={index}>{item.category}</option>
+          ))}
+        </select>
+        <TextField type='number' label="Quantity" variant="outlined" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
+        <TextField type='number' label="Cost Price" variant="outlined" value={cp} onChange={(e) => { setCp(e.target.value) }} />
+        <TextField type='number' label="Selling Price" variant="outlined" value={sp} onChange={(e) => { setSp(e.target.value) }} />
+        {!up ? <Button variant="contained" color="primary" onClick={(e) => { handleAdd(e) }}>Add</Button> :
+          <Button variant="contained" color="primary" onClick={(e) => { handleUp(e) }}>Update</Button>}
+      </form>
+    </DialogContent>
+  </Dialog>
+  <Dialog open={openCategoryDialog} onClose={() => setOpenCategoryDialog(false)}>
+    <DialogTitle>Add Category</DialogTitle>
+    <DialogContent>
+      <form className='flex flex-col gap-3'>
+        <TextField
+          type="text"
+          label="Category Name"
+          variant="outlined"
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+        />
+      </form>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
+      <Button variant="contained" color="primary" onClick={(e) => handleAddCategory(e)}>Add</Button>
+    </DialogActions>
+  </Dialog>
+</div>
+);
 };
 
 export default Inventory;
