@@ -10,6 +10,8 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { MdCategory } from 'react-icons/md';
 
 const Inventory = () => {
   const [open, setOpen] = useState(false);
@@ -21,16 +23,13 @@ const Inventory = () => {
   const [up, setUp] = useState(false);
   const [lastupdate, setLastupdate] = useState('');
 
-  // Adding useState hooks for form fields
+  // Additional useState hooks for form fields
   const [itemname, setItemname] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [cp, setCp] = useState(0);
   const [sp, setSp] = useState(0);
-
-  // Updating useState hooks
   const [id, setId] = useState();
-
   const [newCategory, setNewCategory] = useState('');
 
   const getdata = () => {
@@ -164,9 +163,8 @@ const Inventory = () => {
     <div className="p-6">
       <Header title="Inventory" />
       <ToastContainer />
-      <div className="flex justify-between items-center mb-6">
-        <div className="text-xl font-bold">Inventory</div>
-        <div>Last updated: {lastupdate}</div>
+      <div className="md:relative h-20 mb-6">
+        <div className='p-2 md:absolute relative text-center md:right-0 font-sans italic rounded w-fit' style={{ backgroundColor: '#8DA9C4' }}>Last updated: {lastupdate}</div>
       </div>
       <div className="flex mb-4">
         <input
@@ -175,14 +173,16 @@ const Inventory = () => {
           value={search}
           onChange={handleSearch}
           className="border p-2 flex-grow"
+          style={{ borderColor: '#877666' }}
         />
-        <button onClick={handleOpen} className="ml-4 bg-blue-500 text-white p-2 rounded">Add Item</button>
-        <button onClick={() => setOpenCategoryDialog(true)} className="ml-4 bg-green-500 text-white p-2 rounded">Add Category</button>
+        <button onClick={handleOpen} className="ml-4 p-2 rounded-md flex justify-center items-center gap-1 bg-[#349d75] "><AiOutlinePlus />Add Item</button>
+
+        <button onClick={() => setOpenCategoryDialog(true)} className="ml-4 p-2 rounded flex justify-center items-center gap-1" style={{ backgroundColor: '#464D77', color: '#fff' }}><MdCategory />Add Category</button>
       </div>
-      <div className="bg-white shadow-md rounded-lg p-4">
-        <table className="min-w-full">
+      <div className="shadow-md rounded-lg p-4 bg-white">
+        <table className="min-w-full rounded-md">
           <thead>
-            <tr>
+            <tr className="bg-[#134074] rounded-md text-[#F4EDED]" >
               <th className="py-2">Serial No</th>
               <th className="py-2">Product Name</th>
               <th className="py-2">Category</th>
@@ -196,7 +196,7 @@ const Inventory = () => {
           </thead>
           <tbody>
             {filteredInventory.map((item, index) => (
-              <tr key={item._id}>
+              <tr key={item._id} className='bg-gray-300 text-[#464D77] hover:bg-[#b5bed6]'>
                 <td className="py-2 text-center">{index + 1}</td>
                 <td className="py-2 text-center">{item.name}</td>
                 <td className="py-2 text-center">{item.category}</td>
@@ -206,8 +206,8 @@ const Inventory = () => {
                 <td className="py-2 text-center">₹{item.costprice * item.quantity}</td>
                 <td className="py-2 text-center">₹{(item.sellingprice * item.quantity) - (item.costprice * item.quantity)}</td>
                 <td className="py-2 text-center">
-                  <button className="bg-yellow-500 text-white p-2 rounded" onClick={() => { handleUpdate(item._id) }}>Update</button>
-                  <button className="bg-red-500 text-white p-2 rounded ml-2" onClick={() => { handleDelete(item._id) }}>Delete</button>
+                  <button className="p-2 rounded bg-yellow-500 text-white" onClick={() => { handleUpdate(item._id) }}>Update</button>
+                  <button className="p-2 rounded ml-2 bg-red-500 text-white" onClick={() => { handleDelete(item._id) }}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -220,67 +220,67 @@ const Inventory = () => {
           <Button onClick={handleOpen}>Close</Button>
         </div>
         <DialogContent>
-        <form className='flex flex-col gap-3'>
-        <Autocomplete
-          freeSolo
-          options={inventory.map(item => item.name)} // Provide options from the inventory
-          value={itemname} // Set the current value
-          onChange={(event, value) => {
-            setItemname(value || ''); // Set the itemname to the selected value or an empty string
-            const selectedItem = inventory.find(item => item.name === value);
-            if (selectedItem) {
-              setCp(selectedItem.costprice);
-              setSp(selectedItem.sellingprice);
-            } else {
-              setCp(0); // Reset price fields if no item is selected
-              setSp(0);
-            }
-          }}
-          onInputChange={(event, value) => {
-            setItemname(value); // Update the itemname state based on user input
-            if (!inventory.some(item => item.name === value)) {
-              setCp(0); // Reset price fields for new item
-              setSp(0);
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Item Name" variant="outlined" />
-          )}
-        />
-        <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 border-gray-300 rounded-sm'>
-          <option value="">Select Category</option>
-          {categories.map((item, index) => (
-            <option value={item.category} key={index}>{item.category}</option>
-          ))}
-        </select>
-        <TextField type='number' label="Quantity" variant="outlined" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
-        <TextField type='number' label="Cost Price" variant="outlined" value={cp} onChange={(e) => { setCp(e.target.value) }} />
-        <TextField type='number' label="Selling Price" variant="outlined" value={sp} onChange={(e) => { setSp(e.target.value) }} />
-        {!up ? <Button variant="contained" color="primary" onClick={(e) => { handleAdd(e) }}>Add</Button> :
-          <Button variant="contained" color="primary" onClick={(e) => { handleUp(e) }}>Update</Button>}
-      </form>
-    </DialogContent>
-  </Dialog>
-  <Dialog open={openCategoryDialog} onClose={() => setOpenCategoryDialog(false)}>
-    <DialogTitle>Add Category</DialogTitle>
-    <DialogContent>
-      <form className='flex flex-col gap-3'>
-        <TextField
-          type="text"
-          label="Category Name"
-          variant="outlined"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-        />
-      </form>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
-      <Button variant="contained" color="primary" onClick={(e) => handleAddCategory(e)}>Add</Button>
-    </DialogActions>
-  </Dialog>
-</div>
-);
+          <form className='flex flex-col gap-3'>
+            <Autocomplete
+              freeSolo
+              options={inventory.map(item => item.name)}
+              value={itemname}
+              onChange={(event, value) => {
+                setItemname(value || '');
+                const selectedItem = inventory.find(item => item.name === value);
+                if (selectedItem) {
+                  setCp(selectedItem.costprice);
+                  setSp(selectedItem.sellingprice);
+                } else {
+                  setCp(0);
+                  setSp(0);
+                }
+              }}
+              onInputChange={(event, value) => {
+                setItemname(value);
+                if (!inventory.some(item => item.name === value)) {
+                  setCp(0);
+                  setSp(0);
+                }
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="Item Name" variant="outlined" />
+              )}
+            />
+            <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 rounded-sm' style={{ borderColor: '#877666' }}>
+              <option value="">Select Category</option>
+              {categories.map((item, index) => (
+                <option value={item.category} key={index}>{item.category}</option>
+              ))}
+            </select>
+            <TextField type='number' label="Quantity" variant="outlined" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
+            <TextField type='number' label="Cost Price" variant="outlined" value={cp} onChange={(e) => { setCp(e.target.value) }} />
+            <TextField type='number' label="Selling Price" variant="outlined" value={sp} onChange={(e) => { setSp(e.target.value) }} />
+            {!up ? <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => { handleAdd(e) }}>Add</Button> :
+              <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => { handleUp(e) }}>Update</Button>}
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openCategoryDialog} onClose={() => setOpenCategoryDialog(false)}>
+        <DialogTitle>Add Category</DialogTitle>
+        <DialogContent>
+          <form className='flex flex-col gap-3'>
+            <TextField
+              type="text"
+              label="Category Name"
+              variant="outlined"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
+          <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => handleAddCategory(e)}>Add</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 };
 
 export default Inventory;

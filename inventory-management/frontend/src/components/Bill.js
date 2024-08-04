@@ -14,7 +14,7 @@ const Bill = (props) => {
         {expand && (
           <div className="mt-4 w-full" >
             <p className="text-2xl font-semibold mb-4 text-center">Particulars:</p>
-            <table className="w-full table-auto border-collapse border border-gray-300">
+            <table className=" border-collapse border border-gray-300">
               <thead>
                 <tr className="bg-gray-200">
                   <th className="border border-gray-300 px-4 py-2">S.No</th>

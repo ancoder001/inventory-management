@@ -1,34 +1,41 @@
-import React from 'react'
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-//import { Link } from 'react-router-dom';
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+ // Import the CSS
+import { Home as HomeIcon, Inventory as InventoryIcon, Receipt as ReceiptIcon, ListAlt as ListAltIcon } from '@mui/icons-material';
 
 const SideMenu = () => {
-  return (
-    <div>
-    <Sidebar>
-  <Menu
-    menuItemStyles={{
-      button: {
-        // the active class will be added automatically by react router
-        // so we can use it to style the active menu item
-        [`&.active`]: {
-          backgroundColor: '#13395e',
-          color: '#b6c8d9',
-        },
-      },
-    }}
-  >
-  <SubMenu label="charts">
-    <MenuItem>Pie Chart</MenuItem>
-  </SubMenu>
-    <MenuItem component={<Link to="/" />}> Dashboard</MenuItem>
-    <MenuItem component={<Link to="/inventory" />}> Inventory</MenuItem>
-    <MenuItem component={<Link to="/bill" />}> Bill</MenuItem>
-  </Menu>
-</Sidebar>
-</div>
-  )
-}
+  const [collapsed, setCollapsed] = useState(false);
 
-export default SideMenu
+  return (
+    <Sidebar collapsed={collapsed}>
+    <div className='w-full text-center text-2xl bg-[#134074] py-2 text-white'>AN Solutions</div>
+      <Menu iconShape="circle">
+      <Link to="/dashboard">
+        <MenuItem icon={<HomeIcon />}>
+          Dashboard
+        </MenuItem>
+        </Link>
+        <Link to="/inventory">
+        <MenuItem icon={<InventoryIcon />}>
+          Inventory
+        </MenuItem>
+        </Link>
+        <SubMenu label="Billing" icon={<ReceiptIcon />}>
+        <Link to="/bill">
+        <MenuItem icon={<ListAltIcon />}>
+            New Bill
+          </MenuItem>
+          </Link>
+          <Link to="/bills">
+          <MenuItem icon={<ListAltIcon />}>
+            View Bills
+          </MenuItem>
+          </Link>
+        </SubMenu>
+      </Menu>
+    </Sidebar>
+  );
+};
+
+export default SideMenu;
