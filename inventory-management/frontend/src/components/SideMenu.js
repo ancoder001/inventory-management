@@ -9,15 +9,15 @@ import { useState } from "react";
 const SideMenu = ({ isOpen, toggleMenu }) => {
   const [collapsed, setCollapsed] = useState(false);
   return (
-    <div className={`fixed sm:relative top-0 left-0 h-screen transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0 bg-[#134074]`}>
-      <div className="w-full text-center flex justify-around items-center text-2xl bg-[#134074] py-2 text-white">
+    <div className={`fixed sm:relative top-0 left-0 h-screen transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"} sm:translate-x-0 bg-[#022B3A]`}>
+      <div className="w-full text-center flex justify-around items-center text-2xl bg-[#022B3A] py-2 text-white">
         AN Solutions
         <div className="sm:hidden text-center mt-2">
         <AiOutlineClose size={24} onClick={toggleMenu} className="text-white" />
       </div>
       </div>
       
-      <Sidebar collapsed={collapsed} backgroundColor="#134074">
+      <Sidebar collapsed={collapsed} backgroundColor="#022B3A">
         <Menu iconShape="circle" menuItemStyles={{
           button:{
             ['&:hover']:{
@@ -25,7 +25,7 @@ const SideMenu = ({ isOpen, toggleMenu }) => {
             },
           },
           subMenuContent:{
-            backgroundColor:'#1e589b',
+            backgroundColor:'#022B3A',
           }
         }}>
         <Link to="/dashboard">

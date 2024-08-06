@@ -34,23 +34,23 @@ const Home = () => {
     <div className="p-6">
       <Header title="Dashboard" />
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <div className="bg-[#13315C] text-white flex flex-col gap-6 p-4 shadow-md rounded-lg">
+        <div className="bg-[#1F7A8C] text-white flex flex-col gap-6 p-4 shadow-md rounded-lg">
           <h2 className="text-xl font-bold">Total Products</h2>
           <p className="text-2xl md:text-4xl">{totProd}</p>
         </div>
-        <div className="bg-[#0B2545] text-white flex flex-col gap-6 p-4 shadow-md rounded-lg">
+        <div className="bg-[#BFDBF7] text-black flex flex-col gap-6 p-4 shadow-md rounded-lg">
           <h2 className="text-xl font-bold">Total Invested</h2>
           <p className="text-2xl md:text-4xl">₹{totinvested}</p>
         </div>
-        <div className="bg-[#134074] text-white flex flex-col gap-6 p-4 shadow-md rounded-lg">
+        <div className="bg-[#E1E5F2] text-black flex flex-col gap-6 p-4 shadow-md rounded-lg">
           <h2 className="text-xl font-bold">Total Earnings</h2>
           <p className="text-2xl md:text-4xl">₹{totearning}</p>
         </div>
-        <div className="bg-[#8DA9C4] text-black flex flex-col gap-6 p-4 shadow-md rounded-lg">
+        <div className="bg-[#EEF4ED] text-black flex flex-col gap-6 p-4 shadow-md rounded-lg">
           <h2 className="text-xl font-bold">Total Profit</h2>
           <p className="text-2xl md:text-4xl">₹{totprofit}</p>
         </div>
-        <div className="bg-[#EEF4ED] p-4 shadow-md rounded-lg">
+        <div className="bg-[#FFFFFF] p-4 shadow-md rounded-lg">
           <h2 className="text-xl font-bold">Profit Percentage</h2>
           <p className="text-2xl md:text-3xl">{totinvested !== 0 ? ((totprofit / totinvested) * 100).toFixed(2) : 0}%</p>
         </div>

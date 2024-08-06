@@ -55,8 +55,8 @@ const ProfitChart = () => {
               {
                 label: 'Profit',
                 data: [dailyProfit],
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: ['#BFDBF7','#022B3A'],
+                borderColor: ['#BFDBF7','#022B3A'],
               },
             ],
           }}
@@ -75,8 +75,8 @@ const ProfitChart = () => {
               {
                 label: 'Profit',
                 data: [weeklyProfit],
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
+                backgroundColor: ['#BFDBF7','#022B3A'],
+                borderColor: ['#BFDBF7','#022B3A'],
                 borderWidth: 1,
               },
             ],
@@ -101,8 +101,8 @@ const ProfitChart = () => {
               {
                 label: 'Profit',
                 data: [monthlyProfit],
-                backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                borderColor: 'rgba(255, 206, 86, 1)',
+                backgroundColor: ['#BFDBF7','#022B3A'],
+                borderColor: ['#BFDBF7','#022B3A'],
                 borderWidth: 1,
               },
             ],
@@ -126,8 +126,8 @@ const ProfitChart = () => {
               {
                 label: 'Profit',
                 data: categoryData,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: ['#BFDBF7','#022B3A'],
+                borderColor: ['#BFDBF7','#022B3A'],
                 borderWidth: 1,
               },
             ],

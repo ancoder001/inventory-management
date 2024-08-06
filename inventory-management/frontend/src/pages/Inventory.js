@@ -164,7 +164,7 @@ const Inventory = () => {
       <Header title="Inventory" />
       <ToastContainer />
       <div className="md:relative h-20 mb-6">
-        <div className='p-2 md:absolute relative text-center md:right-0 font-sans italic rounded w-fit' style={{ backgroundColor: '#8DA9C4' }}>Last updated: {lastupdate}</div>
+        <div className='p-2 md:absolute relative text-center md:right-0 font-sans italic rounded w-fit' style={{ backgroundColor: '#f4c542' }}>Last updated: {lastupdate}</div>
       </div>
       <div className="flex mb-4">
         <input
@@ -173,16 +173,16 @@ const Inventory = () => {
           value={search}
           onChange={handleSearch}
           className="border p-2 flex-grow"
-          style={{ borderColor: '#877666' }}
+          style={{ borderColor: '#f07c41' }}
         />
         <button onClick={handleOpen} className="ml-4 p-2 rounded-md flex justify-center items-center gap-1 bg-[#349d75] "><AiOutlinePlus />Add Item</button>
 
-        <button onClick={() => setOpenCategoryDialog(true)} className="ml-4 p-2 rounded flex justify-center items-center gap-1" style={{ backgroundColor: '#464D77', color: '#fff' }}><MdCategory />Add Category</button>
+        <button onClick={() => setOpenCategoryDialog(true)} className="ml-4 p-2 rounded flex justify-center items-center gap-1" style={{ backgroundColor: '#1e3a8a', color: '#fff' }}><MdCategory />Add Category</button>
       </div>
       <div className="shadow-md rounded-lg p-4 bg-white">
         <table className="min-w-full rounded-md">
           <thead>
-            <tr className="bg-[#134074] rounded-md text-[#F4EDED]" >
+            <tr className="bg-[#1f2937] rounded-md text-[#e5e7eb]" >
               <th className="py-2">Serial No</th>
               <th className="py-2">Product Name</th>
               <th className="py-2">Category</th>
@@ -196,7 +196,7 @@ const Inventory = () => {
           </thead>
           <tbody>
             {filteredInventory.map((item, index) => (
-              <tr key={item._id} className='bg-gray-300 text-[#464D77] hover:bg-[#b5bed6]'>
+              <tr key={item._id} className='bg-[#e5e7eb] text-[#1f2937] hover:bg-[#cbd5e1]'>
                 <td className="py-2 text-center">{index + 1}</td>
                 <td className="py-2 text-center">{item.name}</td>
                 <td className="py-2 text-center">{item.category}</td>
@@ -247,7 +247,7 @@ const Inventory = () => {
                 <TextField {...params} label="Item Name" variant="outlined" />
               )}
             />
-            <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 rounded-sm' style={{ borderColor: '#877666' }}>
+            <select value={category} onChange={(e) => { setCategory(e.target.value) }} className='border-2 rounded-sm' style={{ borderColor: '#f07c41' }}>
               <option value="">Select Category</option>
               {categories.map((item, index) => (
                 <option value={item.category} key={index}>{item.category}</option>
@@ -256,8 +256,8 @@ const Inventory = () => {
             <TextField type='number' label="Quantity" variant="outlined" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
             <TextField type='number' label="Cost Price" variant="outlined" value={cp} onChange={(e) => { setCp(e.target.value) }} />
             <TextField type='number' label="Selling Price" variant="outlined" value={sp} onChange={(e) => { setSp(e.target.value) }} />
-            {!up ? <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => { handleAdd(e) }}>Add</Button> :
-              <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => { handleUp(e) }}>Update</Button>}
+            {!up ? <Button variant="contained" style={{ backgroundColor: '#f07c41', color: '#fff' }} onClick={(e) => { handleAdd(e) }}>Add</Button> :
+              <Button variant="contained" style={{ backgroundColor: '#f07c41', color: '#fff' }} onClick={(e) => { handleUp(e) }}>Update</Button>}
           </form>
         </DialogContent>
       </Dialog>
@@ -276,7 +276,7 @@ const Inventory = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenCategoryDialog(false)}>Cancel</Button>
-          <Button variant="contained" style={{ backgroundColor: '#36827F', color: '#fff' }} onClick={(e) => handleAddCategory(e)}>Add</Button>
+          <Button variant="contained" style={{ backgroundColor: '#f07c41', color: '#fff' }} onClick={(e) => handleAddCategory(e)}>Add</Button>
         </DialogActions>
       </Dialog>
     </div>
