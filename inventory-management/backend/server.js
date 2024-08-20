@@ -31,7 +31,7 @@ mongoose.connect("mongodb+srv://aravindofficial382:admin123@cluster0.tdj1qo9.mon
 // .then(()=>{console.log("mongodb connected successfully")})
 // .catch((e)=>{console.log(e)})
 
-app.get("/",(req,res)=>{res.json("welcome")})
+app.get("/",(req,res)=>{res.send("welcome")})
 
 app.listen("5600",()=>{
     console.log("Running on port 5600");
