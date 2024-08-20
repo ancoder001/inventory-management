@@ -24,12 +24,12 @@ app.get('/api/last-updated', async (req, res) => {
     }
   });
 
-// mongoose.connect("mongodb+srv://aravindofficial382:admin123@cluster0.tdj1qo9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-// .then(()=>{console.log("mongodb connected successfully")})
-// .catch((e)=>{console.log(e)})
-mongoose.connect("mongodb://localhost:27017/inventory-management")
+mongoose.connect("mongodb+srv://aravindofficial382:admin123@cluster0.tdj1qo9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then(()=>{console.log("mongodb connected successfully")})
 .catch((e)=>{console.log(e)})
+// mongoose.connect("mongodb://localhost:27017/inventory-management")
+// .then(()=>{console.log("mongodb connected successfully")})
+// .catch((e)=>{console.log(e)})
 
 app.get("/",(req,res)=>{res.json("welcome")})
 
